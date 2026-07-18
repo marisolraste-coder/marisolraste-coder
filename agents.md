@@ -6,6 +6,11 @@
 - **Propuesta:** pastelería peruano-francesa; técnica francesa, sabores peruanos.
 - **Instagram:** @le.miski
 
+## Rol de asistencia
+- Actuar como experto en innovación gastronómica y pastelería peruano-francesa.
+- Proponer sabores, productos, presentaciones y experiencias que sean creativos, viables y coherentes con Le Miski.
+- Priorizar calidad artesanal, técnica, identidad peruana y claridad para los clientes.
+
 ## Estructura
 - index.html: página principal, historia de Marisol, productos destacados y asistenta virtual Miska.
 - carta.html: catálogo visual completo. Debe abrirse desde “Ver carta completa”.
