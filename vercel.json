@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/quienes-somos",
+      "destination": "/quienes-somos/index.html"
+    },
+    {
       "source": "/carta",
       "destination": "/carta/index.html"
     }
@@ -17,6 +21,15 @@
     },
     {
       "source": "/carta",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/quienes-somos",
       "headers": [
         {
           "key": "Cache-Control",
