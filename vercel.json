@@ -8,6 +8,15 @@
           "value": "no-store, max-age=0, must-revalidate"
         }
       ]
+    },
+    {
+      "source": "/carta",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0, must-revalidate"
+        }
+      ]
     }
   ]
 }
