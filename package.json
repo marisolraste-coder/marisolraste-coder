@@ -1,0 +1,14 @@
+{
+  "name": "le-miski-site",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "lint": "node --check api/checkout-config.js && node --check api/upload-receipt.js && node --check api/create-order.js && node --check lib/payment-providers.js",
+    "build": "node --check api/checkout-config.js && node --check api/upload-receipt.js && node --check api/create-order.js && node --check lib/payment-providers.js"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.3.0",
+    "@vercel/kv": "^3.0.0",
+    "formidable": "^3.5.2"
+  }
+}
