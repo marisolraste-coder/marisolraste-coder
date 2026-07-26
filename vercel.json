@@ -11,6 +11,10 @@
     {
       "source": "/checkout",
       "destination": "/checkout/index.html"
+    },
+    {
+      "source": "/tienda",
+      "destination": "/tienda/index.html"
     }
   ],
   "headers": [
@@ -43,6 +47,15 @@
     },
     {
       "source": "/checkout",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/tienda",
       "headers": [
         {
           "key": "Cache-Control",
