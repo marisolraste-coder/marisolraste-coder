@@ -15,6 +15,10 @@
     {
       "source": "/tienda",
       "destination": "/tienda/index.html"
+    },
+    {
+      "source": "/pedidos",
+      "destination": "/pedidos/index.html"
     }
   ],
   "headers": [
@@ -56,6 +60,15 @@
     },
     {
       "source": "/tienda",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/pedidos",
       "headers": [
         {
           "key": "Cache-Control",
