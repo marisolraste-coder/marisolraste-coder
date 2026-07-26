@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "lint": "node --check api/catalog.js && node --check api/checkout-config.js && node --check api/upload-receipt.js && node --check api/create-order.js && node --check lib/catalog.js && node --check lib/payment-providers.js && node --check tienda/store-enhancements.js && node --check checkout/cart-enhancements.js",
+    "typecheck": "node --check api/catalog.js && node --check api/checkout-config.js && node --check api/upload-receipt.js && node --check api/create-order.js && node --check lib/catalog.js && node --check lib/payment-providers.js && node --check tienda/store-enhancements.js && node --check checkout/cart-enhancements.js",
     "build": "node --check api/catalog.js && node --check api/checkout-config.js && node --check api/upload-receipt.js && node --check api/create-order.js && node --check lib/catalog.js && node --check lib/payment-providers.js && node --check tienda/store-enhancements.js && node --check checkout/cart-enhancements.js"
   },
   "dependencies": {

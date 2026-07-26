@@ -5,6 +5,10 @@
       "destination": "/quienes-somos/index.html"
     },
     {
+      "source": "/colecciones",
+      "destination": "/colecciones/index.html"
+    },
+    {
       "source": "/carta",
       "destination": "/carta/index.html"
     },

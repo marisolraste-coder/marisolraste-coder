@@ -15,7 +15,7 @@
   };
   document.addEventListener('DOMContentLoaded', () => {
     const intro = document.querySelector('.intro');
-    if (intro && !document.querySelector('.checkout-progress')) intro.insertAdjacentHTML('beforeend', '<div class="checkout-progress" aria-label="Progreso del pedido"><span>1 Datos</span><span>2 Entrega</span><span>3 Fecha</span><span>4 Pago</span><span>5 Confirmación</span></div>');
+    if (intro && !document.querySelector('.checkout-progress')) intro.insertAdjacentHTML('beforeend', '<div class="checkout-progress" aria-label="Progreso del pedido"><span>1 Datos</span><span>2 Entrega</span><span>3 Fecha</span><span>4 Horario</span><span>5 Pago</span><span>6 Confirmación</span></div>');
     new MutationObserver(enhance).observe(document.body, { childList: true, subtree: true }); enhance();
   });
 })();
