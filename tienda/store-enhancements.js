@@ -3,7 +3,9 @@
   let catalog = [], categoryLabels = {};
   const readCart = () => { try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; } };
   const writeCart = items => localStorage.setItem(key, JSON.stringify(items));
-  const decorate = () => document.querySelectorAll('[data-product]').forEach(button => { button.textContent = 'Personalizar'; });
+  const decorate = () => document.querySelectorAll('[data-product]').forEach(button => {
+    if (button.textContent !== 'Personalizar') button.textContent = 'Personalizar';
+  });
   const currentCategory = () => document.querySelector('.chip.active')?.dataset.category || 'all';
   const renderSearch = () => {
     const search = document.querySelector('#search'), term = search.value.trim().toLowerCase();
