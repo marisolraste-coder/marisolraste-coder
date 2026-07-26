@@ -1,3 +1,5 @@
 .option {
   color: var(--ink);
 }
+
+.checkout-progress{display:flex;gap:.45rem;flex-wrap:wrap;margin:1.4rem 0 2.2rem}.checkout-progress span{border:1px solid rgba(9,32,64,.18);padding:.45rem .6rem;font-size:.67rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#626879}.checkout-progress span:first-child{border-color:#b88a38;color:#092040;background:#f7eee2}.cart-actions{display:flex;gap:.35rem;margin-top:.35rem}.cart-actions button{border:0;background:transparent;padding:0;color:#092040;text-decoration:underline;cursor:pointer;font:700 .67rem "DM Sans",sans-serif}
