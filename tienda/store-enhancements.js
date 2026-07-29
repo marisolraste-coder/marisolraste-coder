@@ -64,6 +64,13 @@
   };
   const addToOrder = () => {
     const product = selectedProduct(); if (!product || !complete()) return;
+    if (product.simple) {
+      const items = readCart(); const existing = items.find(item => item.id === product.id);
+      if (existing) existing.qty += state.quantity;
+      else items.push({ id: product.id, name: product.name, price: Number(product.priceFrom), qty: state.quantity, selectedOptions: [] });
+      writeCart(items); renderSummary(); document.querySelector('#addedNotice').hidden = false; state.quantity = 1; render(); updateBag(true);
+      return;
+    }
     const size = state.selected.size, flavor = state.selected.flavor, presentation = state.selected.presentation || 'clasica';
     const extras = (state.selected.extras || []).slice().sort().join(',') || 'sin';
     const dedication = String(state.selected.dedication || '').replaceAll('|', ' ');

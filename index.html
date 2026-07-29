@@ -229,5 +229,65 @@ const music=s('#lmBackgroundMusic');let musicOn=false,fadeFrame=0;music.volume=.
 </script>
 <style>.lm-info-action{display:inline-block;margin-top:.55rem;color:var(--terracotta);font:700 .67rem "DM Sans",sans-serif;text-decoration:none}.lm-faq{grid-column:1/-1}.lm-faq summary{cursor:pointer;font-weight:700;font-size:.8rem}.lm-faq ul{margin:.55rem 0 0;padding-left:1rem;color:#6c6983;font-size:.7rem;line-height:1.55}</style>
 <style>.carousel-card:nth-child(4) video{transform:none!important}</style>
+<script>
+(() => {
+  const panel = document.querySelector('#lmPanel');
+  const body = panel?.querySelector('.lm-body');
+  const fab = document.querySelector('#lmFab');
+  const close = document.querySelector('#lmClose');
+  if (!panel || !body || !fab || !close) return;
+  const cartKey = 'lemiski-checkout-cart';
+  const cart = {};
+  let catalog = [];
+  let selectedCategory = '';
+  const money = value => `S/ ${Number(value || 0).toFixed(2)}`;
+  const activeProducts = () => catalog.filter(product => product.active);
+  const imageFor = product => product.images?.[0] || '/public/carta/pagina-01.webp';
+  const shortText = product => product.shortDescription || product.fullDescription || 'Una creación artesanal Le Miski.';
+  const recommendationRules = {
+    surprise: ['alfajores', 'bocaditos', 'cheesecakes', 'boutique'],
+    treat: ['cuchareables', 'helados', 'brownies', 'crumbles'],
+    celebration: ['tortas', 'cheesecakes', 'pies', 'bocaditos'],
+    share: ['bocaditos', 'alfajores', 'tortas', 'pies'],
+    elegantGift: ['boutique', 'alfajores', 'cheesecakes', 'bocaditos'],
+    company: ['bocaditos', 'alfajores', 'tortas', 'boutique']
+  };
+  const recommendationsFor = key => {
+    const available = activeProducts();
+    const chosen = recommendationRules[key].flatMap(category => available.filter(product => product.category === category));
+    return [...new Map([...chosen, ...available].map(product => [product.id, product])).values()].slice(0, 5);
+  };
+  const cartRecord = product => {
+    if (product.simple || !product.options?.length) return { id: product.id, name: product.name, price: Number(product.priceFrom), selectedOptions: [] };
+    const option = id => product.options.find(item => item.id === id);
+    const size = option('size')?.values?.[0];
+    const flavor = option('flavor')?.values?.[0];
+    const presentation = option('presentation')?.values?.[0];
+    if (!size || !flavor) return null;
+    return { id: [product.id, size.id, flavor.id, presentation?.id || 'sin', 'sin', '', ''].join('|'), name: product.name, price: Number(size.price || product.priceFrom), selectedOptions: [`Tamaño: ${size.label}`, `${option('flavor').label}: ${flavor.label}`, ...(presentation ? [`Presentación: ${presentation.label}`] : [])] };
+  };
+  const cartItems = () => Object.values(cart);
+  const count = () => cartItems().reduce((sum, item) => sum + item.qty, 0);
+  const total = () => cartItems().reduce((sum, item) => sum + item.price * item.qty, 0);
+  const back = () => '<button class="lm-guide-back" data-guide="home">← Menú principal</button>';
+  const cartDock = () => `<div class="lm-cart-dock"><button data-guide="cart">Ver mi pedido${count() ? ` · ${count()} producto${count() === 1 ? '' : 's'}` : ''}</button><small>${count() ? `Total ${money(total())}` : 'Aún no agregaste productos.'}</small></div>`;
+  const card = product => `<article class="lm-product-card"><img src="${imageFor(product)}" alt="${product.name}"><div><b>${product.name}</b><p>${shortText(product)}</p><span class="lm-product-price">Desde ${money(product.priceFrom)}</span><div class="lm-product-actions"><a class="lm-mini-button" href="/tienda?producto=${encodeURIComponent(product.id)}">Ver producto</a><button class="lm-mini-button lm-mini-primary" data-guide="add" data-id="${product.id}">Agregar</button></div></div></article>`;
+  const renderHome = () => { body.innerHTML = `<h2 class="lm-guide-title">Descubre Le Miski</h2><p class="lm-guide-copy">Elige una ocasión y recibe una selección pensada para ti.</p><div class="lm-guide-grid"><button class="lm-guide-option" data-guide="recommend" data-value="surprise">Quiero sorprender a alguien</button><button class="lm-guide-option" data-guide="recommend" data-value="treat">Quiero darme un gusto</button><button class="lm-guide-option" data-guide="recommend" data-value="celebration">Estoy organizando una celebración</button><button class="lm-guide-option" data-guide="recommend" data-value="share">Necesito algo para compartir</button><button class="lm-guide-option" data-guide="recommend" data-value="elegantGift">Busco un regalo elegante</button><button class="lm-guide-option" data-guide="recommend" data-value="company">Necesito un pedido para mi empresa</button></div><button class="lm-quote-link" data-guide="event">Cotizar una mesa dulce →</button>${cartDock()}`; };
+  const renderRecommendations = key => { const list = recommendationsFor(key); body.innerHTML = `${back()}<h2 class="lm-guide-title">Una selección para ti</h2><p class="lm-guide-copy">Creaciones elegidas especialmente para esta ocasión.</p><div class="lm-product-grid">${list.map(card).join('')}</div>${cartDock()}`; };
+  const renderCatalog = () => { const products = activeProducts(); const categories = [...new Set(products.map(product => product.category))]; if (!categories.includes(selectedCategory)) selectedCategory = categories[0] || ''; const current = products.filter(product => product.category === selectedCategory); body.innerHTML = `${back()}<h2 class="lm-guide-title">Explorar productos</h2><p class="lm-guide-copy">Elige una categoría y agrega varios productos sin salir de esta pantalla.</p><div class="lm-category-bar">${categories.map(category => `<button class="lm-category ${category === selectedCategory ? 'is-active' : ''}" data-guide="category" data-value="${category}">${category}</button>`).join('')}</div><div class="lm-product-grid">${current.map(card).join('')}</div>${cartDock()}`; };
+  const renderEvent = () => { body.innerHTML = `${back()}<h2 class="lm-guide-title">Cotizar una mesa dulce</h2><p class="lm-guide-copy">Prepararemos una propuesta personalizada para tu celebración.</p><div class="lm-guide-form"><input id="lmQuoteName" autocomplete="name" placeholder="Nombre"><select id="lmQuoteEvent"><option value="Cumpleaños infantil">Cumpleaños infantil</option><option value="Cumpleaños adulto">Cumpleaños adulto</option><option value="Celebración familiar">Celebración familiar</option><option value="Evento corporativo">Evento corporativo</option><option value="Boda">Boda</option><option value="Baby shower">Baby shower</option><option value="Otro">Otro</option></select><input id="lmQuoteGuests" type="number" min="1" placeholder="Número de invitados"><input id="lmQuoteDate" type="date" aria-label="Fecha"><textarea id="lmQuoteNotes" placeholder="Comentarios (opcional)"></textarea><button class="lm-primary" data-guide="quote">Solicitar cotización</button></div>`; };
+  const renderCart = () => { const items = cartItems(); body.innerHTML = `${back()}<h2 class="lm-guide-title">Mi pedido</h2>${items.length ? `<div class="lm-cart-list">${items.map(item => `<div class="lm-cart-item"><span>${item.qty} × ${item.name}<br><b>${money(item.price * item.qty)}</b></span><button data-guide="remove" data-id="${item.id}">Quitar</button></div>`).join('')}</div><div class="lm-confirm"><b>Total ${money(total())}</b><br>Revisa tus productos antes de continuar.</div><button class="lm-primary" style="margin-top:.75rem" data-guide="checkout">Continuar con mi pedido</button>` : '<div class="lm-empty">Tu pedido aún está vacío. Explora las recomendaciones para agregar postres.</div>'}`; };
+  const renderLoading = () => { body.innerHTML = '<p class="lm-guide-copy">Preparando tus recomendaciones…</p>'; };
+  const open = () => { panel.hidden = false; fab.setAttribute('aria-expanded', 'true'); renderHome(); };
+  const hide = () => { panel.hidden = true; fab.setAttribute('aria-expanded', 'false'); };
+  fab.onclick = () => panel.hidden ? open() : hide();
+  close.onclick = hide;
+  body.addEventListener('click', event => { const control = event.target.closest('[data-guide]'); if (!control) return; const action = control.dataset.guide; if (action === 'home') return renderHome(); if (action === 'recommend') return renderRecommendations(control.dataset.value); if (action === 'catalog') return renderCatalog(); if (action === 'event') return renderEvent(); if (action === 'cart') return renderCart(); if (action === 'category') { selectedCategory = control.dataset.value; return renderCatalog(); } if (action === 'add') { const product = activeProducts().find(item => item.id === control.dataset.id); const item = product && cartRecord(product); if (!item) return; cart[item.id] = cart[item.id] ? { ...cart[item.id], qty: cart[item.id].qty + 1 } : { ...item, qty: 1 }; control.textContent = 'Agregado'; setTimeout(() => { control.textContent = 'Agregar'; }, 900); return; } if (action === 'remove') { delete cart[control.dataset.id]; return renderCart(); } if (action === 'checkout') { localStorage.setItem(cartKey, JSON.stringify(cartItems())); location.href = '/checkout'; } if (action === 'quote') { const value = id => document.querySelector(id)?.value?.trim() || 'Por definir'; const message = `Hola, Le Miski. Quiero cotizar una mesa dulce.\n\nNombre: ${value('#lmQuoteName')}\nTipo de evento: ${value('#lmQuoteEvent')}\nNúmero de invitados: ${value('#lmQuoteGuests')}\nFecha: ${value('#lmQuoteDate')}\nComentarios: ${value('#lmQuoteNotes')}`; window.open(`https://wa.me/51974880002?text=${encodeURIComponent(message)}`, '_blank', 'noopener'); } });
+  document.querySelectorAll('[data-miska-go]').forEach(button => { button.onclick = () => open(); });
+  renderLoading();
+  fetch('/api/catalog').then(response => response.ok ? response.json() : Promise.reject()).then(data => { catalog = data.products || []; selectedCategory = activeProducts()[0]?.category || ''; renderHome(); }).catch(() => { body.innerHTML = '<p class="lm-empty">No pudimos cargar las recomendaciones. Intenta nuevamente en unos minutos.</p>'; });
+})();
+</script>
+<style>.lm-product-price{display:block;color:var(--terracotta);font-size:.73rem;font-weight:700;margin:.25rem 0 .45rem}.lm-product-actions{display:flex;gap:.35rem}.lm-product-actions .lm-mini-button{text-decoration:none;flex:1;text-align:center}.lm-mini-primary{background:var(--ink);color:#fff;border-color:var(--ink)}.lm-quote-link{display:block;margin:.75rem auto 0;border:0;background:transparent;color:var(--terracotta);font:700 .72rem "DM Sans",sans-serif;cursor:pointer}.lm-guide-option{font-size:.8rem}.lm-guide-option:hover{transform:none}</style>
 </body>
 </html>
