@@ -14,6 +14,8 @@
     });
   };
   document.addEventListener('DOMContentLoaded', () => {
+    const empty = document.querySelector('.layout .empty');
+    if (empty && /carrito está vacío/i.test(empty.textContent)) empty.innerHTML = 'Tu pedido aún está vacío. <a href="/tienda">Descubre algo especial en la tienda</a> o explora nuestras <a href="/colecciones">colecciones</a>.';
     const intro = document.querySelector('.intro');
     if (intro && !document.querySelector('.checkout-progress')) intro.insertAdjacentHTML('beforeend', '<div class="checkout-progress" aria-label="Progreso del pedido"><span>1 Datos</span><span>2 Entrega</span><span>3 Fecha</span><span>4 Horario</span><span>5 Pago</span><span>6 Confirmación</span></div>');
     new MutationObserver(enhance).observe(document.body, { childList: true, subtree: true }); enhance();

@@ -35,7 +35,7 @@
   };
   const renderSummary = () => {
     const items = readCart(); const subtotal = items.reduce((sum, item) => sum + Number(item.price || 0) * Number(item.qty || 0), 0);
-    document.querySelector('#orderSummary').innerHTML = items.length ? items.map(item => `<div class="order-line"><div><b>${escapeHtml(item.name)}</b><small>${(item.selectedOptions || []).join(' · ')}</small><span>${item.qty} unidad${item.qty === 1 ? '' : 'es'}</span></div><strong>${money(item.price * item.qty)}</strong></div>`).join('') : '<p class="order-empty">Tu pedido todavía está por crear.</p>';
+    document.querySelector('#orderSummary').innerHTML = items.length ? items.map(item => `<div class="order-line"><div><b>${escapeHtml(item.name)}</b><small>${(item.selectedOptions || []).join(' · ')}</small><span>${item.qty} unidad${item.qty === 1 ? '' : 'es'}</span></div><strong>${money(item.price * item.qty)}</strong></div>`).join('') : '<p class="order-empty">Tu pedido aún está vacío.<br><a href="/colecciones">Descubre algo especial.</a></p>';
     document.querySelector('#orderSubtotal').textContent = money(subtotal);
     document.querySelector('#orderTotal').textContent = money(subtotal);
     document.querySelector('#checkoutButton').disabled = !items.length;
@@ -48,7 +48,7 @@
     const activeCategoryIds = new Set(available.map(item => item.category));
     root.innerHTML = `<section class="config-step"><span class="step-number">01</span><label>Categoría<select id="categorySelect">${categories.map(category => `<option value="${category.id}" ${category.id === state.category ? 'selected' : ''} ${!activeCategoryIds.has(category.id) ? 'disabled' : ''}>${escapeHtml(category.label)}${!activeCategoryIds.has(category.id) ? ' · Próximamente' : ''}</option>`).join('')}</select></label></section>
       <section class="config-step"><span class="step-number">02</span><label>Producto<select id="productSelect">${available.filter(item => item.category === state.category).map(item => `<option value="${item.id}" ${item.id === state.product ? 'selected' : ''}>${escapeHtml(item.name)}</option>`).join('')}</select></label></section>
-      ${product ? `<section class="config-step product-options"><span class="step-number">03</span><div><h2>${escapeHtml(product.name)}</h2><p>${escapeHtml(product.shortDescription)}</p>${product.options.map(option => `<fieldset class="config-option"><legend>${escapeHtml(option.label)}${option.required ? ' *' : ''}</legend>${choicesFor(option)}</fieldset>`).join('')}</div></section>
+      ${product ? `<section class="config-step product-options"><span class="step-number">03</span><div><h2>${escapeHtml(product.name)}</h2><p>${escapeHtml(product.shortDescription)}</p>${product.preparationTimeHours ? `<small class="product-leadtime">Preparación desde ${escapeHtml(product.preparationTimeHours)} horas de anticipación.</small>` : ''}${product.options.map(option => `<fieldset class="config-option"><legend>${escapeHtml(option.label)}${option.required ? ' *' : ''}</legend>${choicesFor(option)}</fieldset>`).join('')}</div></section>
       <section class="config-step quantity-step"><span class="step-number">04</span><div><span class="field-label">Cantidad</span><div class="config-quantity"><button type="button" data-quantity="-1" aria-label="Reducir cantidad">−</button><strong>${state.quantity}</strong><button type="button" data-quantity="1" aria-label="Aumentar cantidad">+</button></div></div></section>
       <section class="config-total"><div><span>Precio del producto</span><strong>${money(price())}</strong></div><button class="create-button" id="addToOrder" ${complete() ? '' : 'disabled'}>Agregar al pedido</button></section>` : ''}`;
     root.querySelector('#categorySelect').onchange = event => { state.category = event.target.value; state.product = available.find(item => item.category === state.category)?.id || ''; state.quantity = 1; state.selected = {}; render(); };
@@ -89,8 +89,8 @@
   const boot = async () => {
     const response = await fetch('/api/catalog'); const data = await response.json(); if (!response.ok) throw new Error('catalog');
     catalog = data.products; categories = data.categories;
-    const params = new URLSearchParams(location.search); const requested = activeProducts().find(product => product.id === params.get('producto'));
-    state.product = requested?.id || activeProducts()[0]?.id || ''; state.category = requested?.category || activeProducts()[0]?.category || '';
+    const params = new URLSearchParams(location.search); const requested = activeProducts().find(product => product.id === params.get('producto')); const requestedCategory = activeProducts().some(product => product.category === params.get('categoria')) ? params.get('categoria') : '';
+    state.category = requested?.category || requestedCategory || activeProducts()[0]?.category || ''; state.product = requested?.id || activeProducts().find(product => product.category === state.category)?.id || '';
     render(); renderSummary();
     document.querySelector('#checkoutButton').onclick = () => { location.href = '/checkout'; };
     document.querySelector('#addAnother').onclick = () => { document.querySelector('#configurator').scrollIntoView({ behavior: 'smooth', block: 'start' }); };

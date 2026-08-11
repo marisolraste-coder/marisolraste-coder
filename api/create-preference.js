@@ -1,9 +1,14 @@
+const { resolveCartItem } = require('../lib/catalog');
+
 module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' });
   if (!process.env.MP_ACCESS_TOKEN) return res.status(503).json({ error: 'El pago online aún no está configurado. Podés enviar tu pedido por WhatsApp.' });
   try {
     const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-    const items = (body.items || []).map(item => ({ title: item.name, quantity: Number(item.qty), currency_id: 'PEN', unit_price: Number(item.price) }));
+    const items = (body.items || []).map(item => {
+      const resolved = resolveCartItem(item);
+      return { title: resolved.name, quantity: Number(resolved.qty), currency_id: 'PEN', unit_price: Number(resolved.price) };
+    });
     if (!items.length) return res.status(400).json({ error: 'El carrito está vacío' });
     const host = req.headers.origin || `https://${req.headers.host}`;
     const preference = { items, external_reference: `lemiski-${Date.now()}`, back_urls: { success: host + '/?payment=success', failure: host + '/?payment=failure', pending: host + '/?payment=pending' }, metadata: { buyer: body.buyer || {} } };
