@@ -1,0 +1,10 @@
+{
+  "name": "le-miski-os",
+  "private": true,
+  "version": "0.10.1",
+  "type": "module",
+  "scripts": {
+    "lint": "node --check js/app.js && node --check js/auth/supabase-auth.js && node --check js/ui.js && node --check js/types.js && node --check js/data/demo-data.js && node --check js/data/demo-recipes.js && node --check js/data/demo-production-plan.js && node --check js/data/demo-production-orders.js && node --check js/data/demo-inventory.js && node --check js/data/demo-management.js && node --check js/repositories/recipe-repository.js && node --check js/repositories/inventory-repository.js && node --check js/repositories/production-order-repository.js && node --check js/recipes/recipe-editorial-ui.js && node --check js/inventory/inventory-ui.js && node --check js/production/production-order-ui.js && node --check js/import/docx-reader.js && node --check js/import/cuadernito-azul-profile.js && node --check js/import/recipe-normalizer.js && node --check js/import/recipe-validator.js && node --check js/import/recipe-parser.js && node --check js/production/production-engine.js && node --check js/production/production-order-model.js && node --check js/inventory/inventory-engine.js && node --check js/finance/management-engine.js && node --check js/permissions.js && node --check js/state/store.js && node --check js/utils/timer.js && node --check js/utils/metrics.js && node --check sw.js && node scripts/validate.mjs",
+    "build": "node scripts/build-check.mjs"
+  }
+}
